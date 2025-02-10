@@ -4,7 +4,7 @@ Trong hệ thống microservices, quản lý giao dịch (transaction) là một
 
 ## 1. **2-Phase Commit (2PC) – Giao dịch phân tán có cam kết hai pha**  
 
-![image](https://github.com/user-attachments/assets/701889ae-43cb-4cfe-b58e-c5b4167a52ad)
+![image](https://github.com/user-attachments/assets/8fca87c9-25d3-4b1c-a0b0-1aeac40aefad)
 
 
 **Mô hình:**  
