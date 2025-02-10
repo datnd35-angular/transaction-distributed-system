@@ -4,26 +4,8 @@ Trong hệ thống microservices, quản lý giao dịch (transaction) là một
 
 ## 1. **2-Phase Commit (2PC) – Giao dịch phân tán có cam kết hai pha**  
 
-```mermaid
-sequenceDiagram
-    participant Client
-    participant Coordinator as Transaction Coordinator
-    participant ServiceA as Microservice A
-    participant ServiceB as Microservice B
-    participant ServiceC as Microservice C
+![image](https://github.com/user-attachments/assets/701889ae-43cb-4cfe-b58e-c5b4167a52ad)
 
-    Client->>Coordinator: Bắt đầu giao dịch
-    Coordinator->>ServiceA: Prepare?
-    ServiceA-->>Coordinator: Yes
-    Coordinator->>ServiceB: Prepare?
-    ServiceB-->>Coordinator: Yes
-    Coordinator->>ServiceC: Prepare?
-    ServiceC-->>Coordinator: Yes
-    Coordinator->>ServiceA: Commit
-    Coordinator->>ServiceB: Commit
-    Coordinator->>ServiceC: Commit
-    Coordinator-->>Client: Giao dịch hoàn tất
-```
 
 **Mô hình:**  
 2PC là một giao thức nhất quán mạnh mẽ giúp đảm bảo tất cả các dịch vụ tham gia vào một giao dịch đều cam kết hoặc hủy bỏ giao dịch đồng thời.  
@@ -51,47 +33,12 @@ sequenceDiagram
 
 **Sơ đồ Saga (Orchestration)**
 
-```mermaid
-sequenceDiagram
-    participant Client
-    participant SagaOrchestrator as Saga Orchestrator
-    participant ServiceA as Microservice A (Đặt hàng)
-    participant ServiceB as Microservice B (Trừ kho)
-    participant ServiceC as Microservice C (Thanh toán)
+![image](https://github.com/user-attachments/assets/0add3191-aad8-4506-8180-bcb89c37d9b7)
 
-    Client->>SagaOrchestrator: Yêu cầu giao dịch
-    SagaOrchestrator->>ServiceA: Tạo đơn hàng
-    ServiceA-->>SagaOrchestrator: OK
-    SagaOrchestrator->>ServiceB: Trừ kho
-    ServiceB-->>SagaOrchestrator: OK
-    SagaOrchestrator->>ServiceC: Thanh toán
-    ServiceC-->>SagaOrchestrator: Lỗi! (Không đủ tiền)
-    SagaOrchestrator->>ServiceB: Hoàn kho (Compensation)
-    ServiceB-->>SagaOrchestrator: OK
-    SagaOrchestrator->>ServiceA: Hủy đơn hàng
-    ServiceA-->>SagaOrchestrator: OK
-    SagaOrchestrator-->>Client: Giao dịch thất bại
-```
 **Sơ đồ Saga (Choreography)**
 
-```mermaid
-sequenceDiagram
-    participant Client
-    participant ServiceA as Microservice A (Đặt hàng)
-    participant ServiceB as Microservice B (Trừ kho)
-    participant ServiceC as Microservice C (Thanh toán)
-    
-    Client->>ServiceA: Tạo đơn hàng
-    ServiceA-->>ServiceB: Sự kiện "Đơn hàng đã tạo"
-    ServiceB->>ServiceB: Trừ kho
-    ServiceB-->>ServiceC: Sự kiện "Kho đã trừ"
-    ServiceC->>ServiceC: Thanh toán
-    ServiceC-->>Client: Giao dịch hoàn tất
-    
-    Note over ServiceC: Nếu thất bại, gửi sự kiện <br/>"Hoàn tiền"
-    Note over ServiceB: Nhận sự kiện thất bại, gửi <br/>"Hoàn kho"
-    Note over ServiceA: Nhận sự kiện thất bại, gửi <br/>"Hủy đơn hàng"
-```
+![image](https://github.com/user-attachments/assets/20092b9c-6ad2-41cb-97c6-fb60bfe717a1)
+
 
 **Mô hình:**  
 Saga là một chiến lược xử lý giao dịch phân tán theo hướng sự kiện (event-driven). Thay vì khóa tài nguyên như 2PC, Saga chia nhỏ giao dịch thành nhiều bước nhỏ, mỗi bước được thực hiện như một giao dịch độc lập có thể bù trừ nếu có lỗi xảy ra.  
